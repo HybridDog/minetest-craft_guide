@@ -226,6 +226,10 @@ craft_guide.update_recipe = function(meta, player, stack, alternate)
 	craft_guide.set_stack(inv, "fuel", 1, nil)
 
 	if stack==nil then return end
+    if stack:get_name()=="" then
+        craft_guide.log("Request for item with empty name :|")
+        return 
+    end
 	craft_guide.set_stack(inv, "output", 1, stack:get_name())
 
 	alternate = tonumber(alternate) or 1
@@ -243,7 +247,7 @@ craft_guide.update_recipe = function(meta, player, stack, alternate)
 	local craft = crafts[alternate]
 	
 	-- show me the unknown items
-	craft_guide.log(dump(craft))
+	-- craft_guide.log(dump(craft))
 	--minetest.chat_send_player(player:get_player_name(), "recipe for "..stack:get_name()..": "..dump(craft))
 	
 	local itemstack = ItemStack(craft.output)
