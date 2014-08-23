@@ -15,6 +15,30 @@ CRAFT GUIDE API
 -- expose object to other modules
 craft_guide = {}
 
+-- fast fix to "unknown items". not even reading code, just find and replace.
+craft_guide.set_stack=function(inv, listname, index, stack)
+    if type(stack)=="string" then
+        if stack=="group:wood" then
+            stack="default:wood"
+        elseif stack=="group:stone" then
+            stack="default:cobble"
+        elseif stack=="group:sand" then
+            stack="default:sand"
+        elseif stack=="group:stick" then
+            stack="default:stick"
+        elseif stack=="group:wool" then
+            stack="default:wool"
+        elseif stack=="group:dye,basecolor_black" then
+            stack="default:cobble"
+        elseif stack=="group:mesecon_conductor_craftable" then
+            stack="mesecons:wire_00000000_off"
+        elseif stack=="" then
+            stack=""
+        end
+    end
+    inv:set_stack(listname, index, stack)
+end
+
 
 -- define api variables
 craft_guide.crafts = {}
@@ -196,13 +220,13 @@ end
 craft_guide.update_recipe = function(meta, player, stack, alternate)
 	local inv = meta:get_inventory()
 	for i=0,inv:get_size("build"),1 do
-		inv:set_stack("build", i, nil)
+		craft_guide.set_stack(inv, "build", i, nil)
 	end
-	inv:set_stack("cook", 1, nil)
-	inv:set_stack("fuel", 1, nil)
+	craft_guide.set_stack(inv, "cook", 1, nil)
+	craft_guide.set_stack(inv, "fuel", 1, nil)
 
 	if stack==nil then return end
-	inv:set_stack("output", 1, stack:get_name())
+	craft_guide.set_stack(inv, "output", 1, stack:get_name())
 
 	alternate = tonumber(alternate) or 1
 	craft_guide.log(player:get_player_name().." requests recipe "..alternate.." for "..stack:get_name())
@@ -223,94 +247,94 @@ craft_guide.update_recipe = function(meta, player, stack, alternate)
 	--minetest.chat_send_player(player:get_player_name(), "recipe for "..stack:get_name()..": "..dump(craft))
 	
 	local itemstack = ItemStack(craft.output)
-	inv:set_stack("output", 1, itemstack)
+	craft_guide.set_stack(inv, "output", 1, itemstack)
 
 	-- cook
 	if craft.type == "cooking" then
-		inv:set_stack("cook", 1, craft.recipe)
+		craft_guide.set_stack(inv, "cook", 1, craft.recipe)
 		meta:set_string("formspec",craft_guide.get_craft_guide_formspec(meta))
 		return
 	end
 	-- fuel
 	if craft.type == "fuel" then
-		inv:set_stack("fuel", 1, craft.recipe)
+		craft_guide.set_stack(inv, "fuel", 1, craft.recipe)
 		meta:set_string("formspec",craft_guide.get_craft_guide_formspec(meta))
 		return
 	end
 	-- build (shaped or shapeless)
 	if craft.recipe[1] then
 		if (type(craft.recipe[1]) == "string") then
-			inv:set_stack("build", 1, craft.recipe[1])
+			craft_guide.set_stack(inv, "build", 1, craft.recipe[1])
 		else
 			if craft.recipe[1][1] then
-				inv:set_stack("build", 1, craft.recipe[1][1])
+				craft_guide.set_stack(inv, "build", 1, craft.recipe[1][1])
 			end
 			if craft.recipe[1][2] then
-				inv:set_stack("build", 2, craft.recipe[1][2])
+				craft_guide.set_stack(inv, "build", 2, craft.recipe[1][2])
 			end
 			if craft.recipe[1][3] then
-				inv:set_stack("build", 3, craft.recipe[1][3])
+				craft_guide.set_stack(inv, "build", 3, craft.recipe[1][3])
 			end
 		end
 	end
 	if craft.recipe[2] then
 		if (type(craft.recipe[2]) == "string") then
-			inv:set_stack("build", 2, craft.recipe[2])
+			craft_guide.set_stack(inv, "build", 2, craft.recipe[2])
 		else
 			if craft.recipe[2][1] then
-				inv:set_stack("build", 4, craft.recipe[2][1])
+				craft_guide.set_stack(inv, "build", 4, craft.recipe[2][1])
 			end
 			if craft.recipe[2][2] then
-				inv:set_stack("build", 5, craft.recipe[2][2])
+				craft_guide.set_stack(inv, "build", 5, craft.recipe[2][2])
 			end
 			if craft.recipe[2][3] then
-				inv:set_stack("build", 6, craft.recipe[2][3])
+				craft_guide.set_stack(inv, "build", 6, craft.recipe[2][3])
 			end
 		end
 	end
 	if craft.recipe[3] then
 		if (type(craft.recipe[3]) == "string") then
-			inv:set_stack("build", 3, craft.recipe[3])
+			craft_guide.set_stack(inv, "build", 3, craft.recipe[3])
 		else
 			if craft.recipe[3][1] then
-				inv:set_stack("build", 7, craft.recipe[3][1])
+				craft_guide.set_stack(inv, "build", 7, craft.recipe[3][1])
 			end
 			if craft.recipe[3][2] then
-				inv:set_stack("build", 8, craft.recipe[3][2])
+				craft_guide.set_stack(inv, "build", 8, craft.recipe[3][2])
 			end
 			if craft.recipe[3][3] then
-				inv:set_stack("build", 9, craft.recipe[3][3])
+				craft_guide.set_stack(inv, "build", 9, craft.recipe[3][3])
 			end
 		end
 	end
 	if craft.recipe[4] then
 		if (type(craft.recipe[4]) == "string") then
-			inv:set_stack("build", 4, craft.recipe[4])
+			craft_guide.set_stack(inv, "build", 4, craft.recipe[4])
 		end
 	end
 	if craft.recipe[5] then
 		if (type(craft.recipe[5]) == "string") then
-			inv:set_stack("build", 5, craft.recipe[5])
+			craft_guide.set_stack(inv, "build", 5, craft.recipe[5])
 		end
 	end
 	if craft.recipe[6] then
 		if (type(craft.recipe[6]) == "string") then
-			inv:set_stack("build", 6, craft.recipe[6])
+			craft_guide.set_stack(inv, "build", 6, craft.recipe[6])
 		end
 	end
 	if craft.recipe[7] then
 		if (type(craft.recipe[7]) == "string") then
-			inv:set_stack("build", 7, craft.recipe[7])
+			craft_guide.set_stack(inv, "build", 7, craft.recipe[7])
 		end
 	end
 	if craft.recipe[8] then
 		if (type(craft.recipe[8]) == "string") then
-			inv:set_stack("build", 8, craft.recipe[8])
+			craft_guide.set_stack(inv, "build", 8, craft.recipe[8])
 		end
 	end
 	if craft.recipe[9] then
 		if (type(craft.recipe[9]) == "string") then
-			inv:set_stack("build", 9, craft.recipe[9])
+			craft_guide.set_stack(inv, "build", 9, craft.recipe[9])
 		end
 	end
 	meta:set_string("formspec",craft_guide.get_craft_guide_formspec(meta))
@@ -329,7 +353,7 @@ craft_guide.create_inventory = function(inv, search)
 					--and (not def.groups.not_in_creative_inventory or def.groups.not_in_creative_inventory == 0)
 					and def.description and def.description ~= "" then
 				if search then
-					if string.find(def.name, search) or string.find(def.description, search) then
+					if string.find(def.name, search, 1, true) or string.find(def.description, search, 1, true) then
 						table.insert(craft_guide_list, name)
 					end
 				else
@@ -341,7 +365,7 @@ craft_guide.create_inventory = function(inv, search)
 
 	table.sort(craft_guide_list)
 	for i=0,inv:get_size("main"),1 do
-		inv:set_stack("main", i, nil)
+		craft_guide.set_stack(inv, "main", i, nil)
 	end
 	inv:set_size("main", #craft_guide_list)
 	for _,itemstring in ipairs(craft_guide_list) do
@@ -355,16 +379,16 @@ craft_guide.allow_metadata_inventory_move = function(pos, from_list, from_index,
 	local meta = minetest.env:get_meta(pos)
 	local inv = meta:get_inventory()
 	if to_list == "bin" and from_list == "output" then
-		inv:set_stack(from_list,from_index,nil)
+		craft_guide.set_stack(inv, from_list,from_index,nil)
 		craft_guide.update_recipe(meta, player, inv:get_stack(from_list, from_index))
 	end
 	if to_list == "bin" and from_list == "bookmark" then
-		inv:set_stack(from_list,from_index,nil)
+		craft_guide.set_stack(inv, from_list,from_index,nil)
 	end
 	if to_list == "bookmark" then
-		inv:set_stack(to_list, to_index, inv:get_stack(from_list, from_index):get_name())
+		craft_guide.set_stack(inv, to_list, to_index, inv:get_stack(from_list, from_index):get_name())
 		if from_list == "output" then
-			inv:set_stack(from_list,from_index,nil)
+			craft_guide.set_stack(inv, from_list,from_index,nil)
 		end
 	end
 	if to_list == "output" or from_list == "output" then
